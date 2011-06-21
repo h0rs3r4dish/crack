@@ -14,15 +14,13 @@ class Foil::Window
 	def map; return @map[1...@map.length]; end # Drop the null character map[0]
 end
 
-describe "Window" do
-	it "has a blank map when first created" do
-		window = Foil::Window.new(0,0,1,1)
-		window.map.should == " "
+describe Foil::Window do
+	it "has a blank map when first created", [0,0,1,1] do
+		subject.map.should == " "
 	end
-	it "allows placing letters" do
-		window = Foil::Window.new(0,0,3,1) # "   "
-		sandbox_window window
-		window.char_at(1,0,"b")
-		window.map.should == " b "
+	it "allows placing letters", [0,0,3,1] do
+		sandbox_window subject
+		subject.char_at(1,0,"b")
+		subject.map.should == " b "
 	end
 end
