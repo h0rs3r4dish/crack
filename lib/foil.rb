@@ -4,8 +4,9 @@ class Window
 	attr_reader :window_id, :dimensions
 
 	def initialize(x,y,w=80,h=24)
+		x += 1; y += 1
 		@dimensions = { :x => x, :y => y, :w => w, :h => h }
-		@map = " " * w * h
+		@map = " " * w * h + " " # First character is a throwaway
 		@window_id = Foil.register_window self
 	end
 
@@ -20,12 +21,14 @@ class Window
 		@map[x * y]
 	end
 	def get_char_range(x,y,w,h)
-		(0..h).map { |hh|
+		x += 1; y += 1
+		(1..h).map { |hh|
 			@map[x*hh, (x+w)*hh]
 		}
 	end
 
 	def redraw(x,y,w,h)
+		x += 1; y += 1
 		h.times { |hh|
 			yy = y + hh
 			text_at(x,y+hh, @map[x * yy, (x + w) * yy])
@@ -34,7 +37,7 @@ class Window
 		
 
 	def clear
-		cursor_to(0, 0)
+		cursor_to(1, 1)
 		@map = ""
 		@dimensions[:h].times {
 			spaces = " " * @dimensions[:w]
@@ -43,41 +46,47 @@ class Window
 		}
 	end
 	def text_at(x, y, text)
-		cx = x; cy = y;
+		x += 1; y += 1
 		perline = @dimensins[:w] - x
 		text.split("\n").each { |line|
 			if line.length > perline then
 				loc = 0
 				while loc < line.length
-					cursor_to(cx, cy)
-					start = cx * cy
+					cursor_to(x, y)
+					start = x * y
 					segment = line[loc, loc+perline]
 
 					puts segment
 					@map[start, start+perline] = segment
 
 					loc += perline
-					cy += 1
-					return if cy > @dimensions[:h]
+					y += 1
+					return if y > @dimensions[:h]
 				end
 			else
-				cursor_to(cx, cy)
-				start = cx * cy
+				cursor_to(x, y)
+				start = x * y
 
 				puts line
 				@map[start, start + line.length] = line
 
-				cy += 1
+				y += 1
 			end
 			return if cy > @dimensions[:h]
 		}
+	end
+	def char_at(x, y, c)
+		x += 1; y += 1
+		cursor_to(x, y)
+		@map[x * y] = c
+		print c
 	end
 
 	def cursor_up(n=1); print "\033[#{n}A"; end
 	def cursor_down(n=1); print "\033[#{n}B"; end
 	def cursor_right(n=1); print "\033[#{n}C"; end
 	def cursor_left(n=1); print "\033[#{n}D"; end
-	def cursor_to(l=0,c=0); print "\033[#{l};#{c}H"; end
+	def cursor_to(l=1,c=1); print "\033[#{l-1};#{c-1}H"; end
 end
 
 class << self
