@@ -52,8 +52,9 @@ module Spec
 			@exceptions = Array.new
 			instance_eval &block
 		end
-		def it(desc)
-			@subject = @const.new if @const.class == Class
+		def it(desc, args=[])
+			args = [args] unless args.class == Array
+			@subject = @const.new(*args) if @const.class == Class
 			@mocks = Array.new
 			@tests += 1
 			begin
