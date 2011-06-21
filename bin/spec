@@ -10,7 +10,8 @@ module Spec
 		end
 		def ==(other)
 			test = (@self == other)
-			raise AssertionError unless (@invert ? !test : test)
+			raise AssertionError, "Expected '#{other}', found '#{@self}'" \
+				 unless (@invert ? !test : test)
 		end
 		def !=(other)
 			@invert = !@invert; self == other; @invert = !@invert
@@ -69,7 +70,7 @@ module Spec
 			(@mocks.push Spec::MockObject.new(properties)).last
 		end
 		def test_info
-			{ :tests => @tests, :passed => @passed_tests,
+			{ :passed => @passed_tests, :tests => @tests,
 				:time => (Time.now - @start_time),
 				:exceptions => @exceptions }
 		end
@@ -91,6 +92,5 @@ class Object
 end
 
 ((File.directory? ARGV.first) ? Dir[ARGV.first+'/*'] : ARGV).each { |file|
-	#require_relative file
 	require file
 }
