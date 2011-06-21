@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+
+module Spec
+	class AssertionError < Exception; end
+
+	class Should
+		def initialize(obj, invert=false)
+			@invert = invert
+			@self = obj
+		end
+		def ==(other)
+			test = (@self == other)
+			raise AssertionError unless (@invert ? !test : test)
+		end
+		def !=(other)
+			@invert = !@invert; self == other; @invert = !@invert
+		end
+	end
+
+	class MockObject
+		def initialize(vars)
+			@vars = vars
+			@calls = Hash.new
+			@accept_any_call = false
+		end
+		def method_missing(method, *a)
+			@calls[method] = true if @calls.key? method
+			return @vars[method] if @vars.key? method
+			return if @calls.key?(method) or @accept_any_call
+			raise "No method #{method}"
+		end
+		def should_receive(call)
+			@calls[call] = false
+		end
+		def received?
+			@calls.each_pair { |call,b| raise "Never got #{call}" if !b }
+		end
+		def as_null_object
+			@accept_any_call = true
+			self
+		end
+	end
+	
+	class TestCase
+		attr_reader :subject
+
+		def initialize(const,block)
+			@const = const
+			@tests = @passed_tests = 0
+			@start_time = Time.now
+			@exceptions = Array.new
+			instance_eval &block
+		end
+		def it(desc)
+			@subject = @const.new if @const.class == Class
+			@mocks = Array.new
+			@tests += 1
+			begin
+				yield
+				@mocks.each { |m| m.received? }
+				print '.'
+				@passed_tests += 1 
+			rescue Exception => e
+				print 'F'
+				@exceptions.push e
+			end
+		end
+		def mock(properties)
+			(@mocks.push Spec::MockObject.new(properties)).last
+		end
+		def test_info
+			{ :tests => @tests, :passed => @passed_tests,
+				:time => (Time.now - @start_time),
+				:exceptions => @exceptions }
+		end
+	end
+end
+
+def describe(const, &block)
+	info = Spec::TestCase.new(const, block).test_info
+	puts "\n\n%d/%d tests passed in %0.5f seconds" % info.values[0..2]
+	puts "Problems:\n" + info[:exceptions].map { |e|
+		"- "+e.message+e.backtrace[0..6].select { |b|
+			!(b =~ /spec/) }.map { |b| "\n"+(" "*4)+b }.join
+	}.join("\n") unless info[:exceptions].empty?
+end
+
+class Object
+	def should; Spec::Should.new(self); end
+	def should_not; Spec::Should.new(self, true); end
+end
+
+((File.directory? ARGV.first) ? Dir[ARGV.first+'/*'] : ARGV).each { |file|
+	#require_relative file
+	require file
+}
