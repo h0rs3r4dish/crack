@@ -47,12 +47,13 @@ class Window
 				loc = 0
 				while loc < line.length
 					cursor_to(x, y)
-					segment = line[loc, loc+perline]
+					loc += perline
+					endloc = loc + perline
+					segment = line[loc, endloc]
 
 					print segment
-					@map[y][loc..(loc+perline)] = segment
+					@map[y][loc..(loc + segment.length)] = segment
 
-					loc += perline
 					y += 1
 					return if y > @dimensions[:h]
 				end

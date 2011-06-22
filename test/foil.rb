@@ -11,16 +11,22 @@ def sandbox_window(w)
 end
 
 class Foil::Window
-	def map; return @map[1...@map.length]; end # Drop the null character map[0]
+	attr_reader :map
 end
 
 describe Foil::Window do
 	it "has a blank map when first created", [0,0,1,1] do
-		subject.map.should == " "
+		subject.map.first.should == " "
 	end
 	it "allows placing letters", [0,0,3,1] do
 		sandbox_window subject
 		subject.char_at(1,0,"b")
-		subject.map.should == " b "
+		subject.map.first.should == " b "
+	end
+	it "wraps words automatically", [0,0,3,1] do
+		sandbox_window subject
+		subject.text_at(0,0,"four")
+		subject.map[0].should == "fou"
+		subject.map[1].should == "r  "
 	end
 end
