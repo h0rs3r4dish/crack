@@ -13,7 +13,7 @@ class Window
 		Foil.hide_window self
 	end
 	def show
-		redraw 0, 0, @dimensions[:h], @dimensions[:w]
+		redraw 0, 0, @dimensions[:w], @dimensions[:h]
 	end
 
 	def get_char_at(x,y)
@@ -28,6 +28,7 @@ class Window
 	def redraw(x,y,w,h)
 		h.times { |hh|
 			yy = y + hh
+			log "hh: #{hh}; y: #{y}; yy: #{yy}"
 			text_at(x, yy, @map[yy][x..(x+w)])
 		}
 	end
