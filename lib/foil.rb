@@ -1,19 +1,22 @@
 module Foil
 
 class Window
-	attr_reader :window_id, :dimensions
+	attr_reader :window_id, :dimensions, :hidden
 
 	def initialize(x=0,y=0,w=80,h=24)
 		@dimensions = { :x => x, :y => y, :w => w, :h => h }
 		@map = Array.new(h) { " " * w }
 		@window_id = Foil.register_window self
+		@hidden = false
 	end
 
 	def hide
 		Foil.hide_window self
+		@hidden = true
 	end
 	def show
 		redraw 0, 0, @dimensions[:w], @dimensions[:h]
+		@hidden = false
 	end
 
 	def get_char_at(x,y)
@@ -28,7 +31,6 @@ class Window
 	def redraw(x,y,w,h)
 		h.times { |hh|
 			yy = y + hh
-			log "hh: #{hh}; y: #{y}; yy: #{yy}"
 			text_at(x, yy, @map[yy][x..(x+w)])
 		}
 	end
@@ -97,9 +99,14 @@ class << self
 		# FIXME: Right now, it redraws everything. Should just find the
 		# specific areas to redraw. later. Much later.
 		@window_list.reverse.each { |ww|
-			ww.show unless ww == w
+			ww.show unless ww == w or w.hidden
 		}
 	end
+
+	def cursor_to(x, y)
+		print "\033[#{y};#{x}H"
+	end
+
 end
 
 end
