@@ -31,7 +31,8 @@ class Window
 	def redraw(x,y,w,h)
 		h.times { |hh|
 			yy = y + hh
-			text_at(x, yy, @map[yy][x..(x+w)])
+			cursor_to x, yy
+			print @map[yy][x..(x+w-1)]
 		}
 	end
 		
@@ -79,7 +80,7 @@ class Window
 	def cursor_right(n=1); print "\033[#{n}C"; end
 	def cursor_left(n=1); print "\033[#{n}D"; end
 	def cursor_to(l=1,c=1)
-		l += @dimensions[:y] + 1; c += @dimensions[:x] + 1
+		l += @dimensions[:y]+1; c += @dimensions[:x]+1
 		print "\033[#{c};#{l}H"
 	end
 end
@@ -104,7 +105,7 @@ class << self
 	end
 
 	def cursor_to(x, y)
-		print "\033[#{y};#{x}H"
+		print "\033[#{y+1};#{x+1}H"
 	end
 
 end
