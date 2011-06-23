@@ -30,3 +30,11 @@ letters by itself. Poof. Bug gone. I assume it's still lurking somewhere within
 the `#text_at` method, but honestly, I don't care. I have no idea how it got to
 where it is, or what caused it, or anything. Everything's working now, so I'm
 just going to ignore it and hope I fixed whatever it was.
+
+I'm just going to steal the map generater from Jack, my Javascript 7DRL. It was
+simple, but it worked. it was based off of Rogue's idea: you have 6 equal tiles
+on the map. Each one can contain a room or a long hallway. Then there is at
+least one hallway from each room, and (I forget how) it makes sure that every
+room is accessible. So, it's not particularly inventive, but it works, and for
+now that's good enough. As long as I keep the same data format for the actual
+map data, I can mess with the generator all I want later.
