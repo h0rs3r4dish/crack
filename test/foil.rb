@@ -23,7 +23,7 @@ describe Foil::Window do
 		subject.char_at(1,0,"b")
 		subject.map.first.should == " b "
 	end
-	it "wraps words automatically", [0,0,3,1] do
+	it "wraps words automatically", [0,0,3,2] do
 		sandbox_window subject
 		subject.text_at(0,0,"four")
 		subject.map[0].should == "fou"
