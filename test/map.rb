@@ -24,3 +24,7 @@ describe Crack::MapTile do
 		subject.items.should == [ items.last ]
 	end
 end
+
+describe Crack::Floor do
+	module Log; class << self; def puts *a; end; def open *a; end; end; end
+end
