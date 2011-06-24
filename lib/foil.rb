@@ -79,9 +79,9 @@ class Window
 	def cursor_down(n=1); print "\033[#{n}B"; end
 	def cursor_right(n=1); print "\033[#{n}C"; end
 	def cursor_left(n=1); print "\033[#{n}D"; end
-	def cursor_to(l=1,c=1)
+	def cursor_to(c=1,l=1)
 		l += @dimensions[:y]+1; c += @dimensions[:x]+1
-		print "\033[#{c};#{l}H"
+		print "\033[#{l};#{c}H"
 	end
 end
 
