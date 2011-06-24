@@ -1,6 +1,17 @@
 Devlog
 ======
 
+24 June 2011 - 4:56 PM
+----------------------
+
+I ported over the map generator from Jack. It's not quite done. Right now, it
+can do a bit of the hard stuff: make rooms. However, I made sure that every one
+of the rooms was vaguely centered, so I can literally just trace a hallway from
+one centerpoint to another. Later on today I'll do the hallway part, and start
+building the game itself, now that the peices are falling into place. Ideally,
+by the end of the day, I'll be able to implement a random map with collision
+detection. Might toss in doors.
+
 23 June 2011 - 1:15 AM
 ----------------------
 
