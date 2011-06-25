@@ -20,7 +20,7 @@ f = Crack::Floor.new(75,22)
 f.generate!
 
 w_msgs.clear
-w_msgs.text_at(0,1, "Finished generating")
+w_msgs.text_at(0,1, "Finished generating rooms")
 f.map.each_with_index { |row, y|
 	w_main.cursor_to 0, y
 	row.each { |tile|

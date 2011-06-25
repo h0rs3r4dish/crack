@@ -52,7 +52,7 @@ class Floor
 				Log.puts "Tile offset: #{offset_x}x#{offset_y}"
 				stairway = if cur_sector == loc_stair_up then
 					:up
-				elsif cur_sector == loc_stair_down then
+				elsif cur_sector == loc_stair_down
 					:down
 				else
 					:none
@@ -139,7 +139,80 @@ class Floor
 	end
 	def generate_sector_connections(start_sector)
 		Log.puts "Connecting all sectors, starting at #{start_sector}"
+		# Assign vertical hallways randomly, ensuring there's at least one
+		vert_halls = Array.new(3); vert_halls[rand(3)] = true;
+		vert_halls = vert_halls.map { |v| (v.nil?) ? (rand(2) == 1) : v }
+		Log.puts "Vertical hallways: #{vert_halls.join ', '}"
+		Log.puts "Creating #{(vert_halls - [false]).length} vertical hallways"
+		vert_halls.each_with_index { |hall, start|
+			generate_hallway_vertical(start, start+3) if hall
+		}
+		# Assign horizontal halls; if there's a vert, only one, otherwise both
+		horiz_halls = Array.new(2)
+		2.times { |id|
+			if vert_halls[id..(id+1)] != [true, true] then
+				horiz_halls[id] = :both
+			else
+				horiz_halls[id] = [:top, :bottom][rand 2]
+			end
+		}
+		horiz_halls.each_with_index { |halloc, sector|
+			if halloc == :both or halloc == :top then
+				Log.puts "Creating top hallway from #{sector} to #{sector+1}"
+				generate_hallway_horizontal(sector, sector+1)
+			end
+			if halloc == :both or halloc == :bottom then
+				Log.puts "Creating bottom hall from #{sector+3} to #{sector+4}"
+				generate_hallway_horizontal(sector+3, sector+4)
+			end
+		}
 	end
+	def generate_hallway_vertical(s_start, s_end)
+		Log.puts "Creating hallway from sectors #{s_start} to #{s_end}"
+		x = SECTOR_WIDTH / 2
+		x += (SECTOR_WIDTH * (s_start % 3)) + 1
+		y_start = SECTOR_HEIGHT / 2 + 1
+		y_end = 0
+		while @map[y_start][x].type != :wall
+			y_start += 1
+		end
+		Log.puts "Fount top wall at #{y_start}"
+		y_end = y_start + 1
+		while @map[y_end][x].type != :wall
+			y_end += 1
+		end
+		Log.puts "Found bottom wall at #{y_end}"
+		(y_start..y_end).each { |y|
+			@map[y][x].type = :floor
+			@map[y][x-1].type = :wall
+			@map[y][x+1].type = :wall
+		}
+	end
+	def generate_hallway_horizontal(s_start, s_end)
+		Log.puts "Creating hallway from sectors #{s_start} to #{s_end}"
+		y = SECTOR_HEIGHT / 2 + 1
+		y += SECTOR_HEIGHT if s_start > 2
+		x_start = SECTOR_WIDTH / 2
+		x_start += (SECTOR_WIDTH * (s_start % 3)) + 1
+		Log.puts "Starting wall search at #{x_start},#{y}"
+		x_end = 0
+		while @map[y][x_start].type != :wall
+			Log.puts "#{x_start},#{y} = #{@map[y][x_start].type}"
+			x_start += 1
+		end
+		Log.puts "Found left wall at #{x_start}"
+		x_end = x_start + 1
+		while @map[y][x_end].type != :wall
+			x_end += 1
+		end
+		Log.puts "Found right wall at #{x_end}"
+		(x_start..x_end).each { |x|
+			@map[y-1][x].type = :wall
+			@map[y+1][x].type = :wall
+			@map[y][x].type = :floor
+		}
+	end
+
 end
 
 end
