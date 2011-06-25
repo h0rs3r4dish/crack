@@ -153,7 +153,7 @@ class Floor
 			if vert_halls[id..(id+1)] != [true, true] then
 				horiz_halls[id] = :both
 			else
-				horiz_halls[id] = [:top, :bottom][rand 2]
+				horiz_halls[id] = [:top, :bottom, :both][rand 3]
 			end
 		}
 		horiz_halls.each_with_index { |halloc, sector|
